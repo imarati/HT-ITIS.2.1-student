@@ -83,11 +83,11 @@ public static class MathParserService
             }
             else if (original[i] == ')')
             {
-                while (stack.Count > 0 && stack.Peek() != '(')
-                {
-                    output += " ";
-                    output += stack.Pop();
-                }
+                // while (stack.Count > 0 && stack.Peek() != '(')
+                // {
+                //     output += " ";
+                //     output += stack.Pop();
+                // }
 
                 stack.Pop();
             }

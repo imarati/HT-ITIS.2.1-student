@@ -10,8 +10,8 @@ public class MathExpressionValidatorService
     {
         if (string.IsNullOrEmpty(expression))
             throw new Exception(MathErrorMessager.EmptyString);
-        if (!expression.StartsWith('-') && Operatinos.Contains($"{expression[0]}"))
-            throw new Exception(MathErrorMessager.StartingWithOperation);
+        // if (!expression.StartsWith('-') && Operatinos.Contains($"{expression[0]}"))
+        //     throw new Exception(MathErrorMessager.StartingWithOperation);
         if (Operatinos.Contains($"{expression[^1]}"))
             throw new Exception(MathErrorMessager.EndingWithOperation);
         if (!CheckParenthesis(expression))
