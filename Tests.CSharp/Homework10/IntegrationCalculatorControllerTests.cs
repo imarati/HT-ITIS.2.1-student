@@ -48,6 +48,7 @@ public class IntegrationCalculatorControllerTests : IClassFixture<TestApplicatio
     [InlineData("(10 - 2", MathErrorMessager.IncorrectBracketsNumber)]
     [InlineData(")10 - 2", MathErrorMessager.IncorrectBracketsNumber)]
     [InlineData("10 - 2(", MathErrorMessager.IncorrectBracketsNumber)]
+    [InlineData(")10 - 2(", MathErrorMessager.IncorrectBracketsNumber)]
     [InlineData("10 / 0", MathErrorMessager.DivisionByZero)]
     [InlineData("10 / (1 - 1)", MathErrorMessager.DivisionByZero)]
     public async Task Calculate_CalculateExpression_Error(string expression, string result)
