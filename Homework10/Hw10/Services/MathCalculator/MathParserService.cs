@@ -32,7 +32,7 @@ public static class MathParserService
                 case "*":
                     operations.Push(Expression.Multiply(left, right));
                     break;
-                case "/":
+                default:
                     operations.Push(Expression.Divide(left, right));
                     break;
             }
