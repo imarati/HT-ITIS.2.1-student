@@ -83,7 +83,7 @@ public static class MathParserService
             }
             else if (original[i] == ')')
             {
-                while (stack.Count > 0 && stack.Peek() != '(')
+                while (stack.Peek() != '(')
                 {
                     output += " ";
                     output += stack.Pop();
