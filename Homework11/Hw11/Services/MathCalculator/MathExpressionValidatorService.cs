@@ -2,17 +2,16 @@ using Hw11.ErrorMessages;
 
 namespace Hw11.Services.MathCalculator;
 
-public class MathExpressionValidatorService
+public static class MathExpressionValidatorService
 {
-    private static readonly string[] Operations = { "+", "-", "*", "/" };
-
+    private static readonly char[] Operations = { '+', '-', '*', '/' };
     public static void ValidateExpression(string? expression)
     {
         if (string.IsNullOrEmpty(expression))
             throw new Exception(MathErrorMessager.EmptyString);
-        if (!expression.StartsWith('-') && Operations.Contains($"{expression[0]}"))
+        if (!expression.StartsWith('-') && Operations.Contains(expression[0]))
             throw new Exception(MathErrorMessager.StartingWithOperation);
-        if (Operations.Contains($"{expression[^1]}"))
+        if (Operations.Contains(expression[^1]))
             throw new Exception(MathErrorMessager.EndingWithOperation);
         if (!CheckParenthesis(expression))
             throw new Exception(MathErrorMessager.IncorrectBracketsNumber);
@@ -22,25 +21,25 @@ public class MathExpressionValidatorService
 
         foreach (var s in symbols)
         {
-            if (s.StartsWith('(')
-                && Operations.Contains(s[1].ToString())
+            if (s.StartsWith('(') 
+                && Operations.Contains(s[1]) 
                 && !s[1].Equals('-'))
                 throw new Exception(MathErrorMessager.InvalidOperatorAfterParenthesisMessage(s[1].ToString()));
 
             if (s.EndsWith(')')
-                && Operations.Contains(s[^2].ToString()))
+                && Operations.Contains(s[^2]))
                 throw new Exception(MathErrorMessager.OperationBeforeParenthesisMessage(s[^2].ToString()));
 
             var pure = s.Replace("(", "").Replace(")", "");
 
-            if (!Operations.Contains(pure)
+            if (!(pure.Length == 1 && Operations.Contains(pure[0]))
                 && !double.TryParse(pure, out var num))
             {
                 foreach (var c in pure.Where(c => !char.IsDigit(c)
-                                                  && !c.Equals('.')
-                                                  && !c.Equals('(')
-                                                  && !c.Equals(')')
-                                                  && !Operations.Contains(c.ToString())))
+                                               && !c.Equals('.')
+                                               && !c.Equals('(')
+                                               && !c.Equals(')')
+                                               && !Operations.Contains(c)))
                     throw new Exception(MathErrorMessager.UnknownCharacterMessage(c));
 
                 throw new Exception(MathErrorMessager.NotNumberMessage(s));
@@ -52,7 +51,7 @@ public class MathExpressionValidatorService
                 continue;
             }
 
-            if (Operations.Contains(prev) && Operations.Contains(pure))
+            if (prev.Length == 1 && Operations.Contains(prev[0]) && pure.Length == 1 && Operations.Contains(pure[0]))
                 throw new Exception(MathErrorMessager.TwoOperationInRowMessage(prev, pure));
 
             prev = s;
@@ -71,5 +70,4 @@ public class MathExpressionValidatorService
 
         return count == 0;
     }
-
 }
