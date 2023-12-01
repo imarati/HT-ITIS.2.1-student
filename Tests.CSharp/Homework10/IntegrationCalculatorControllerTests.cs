@@ -22,6 +22,7 @@ public class IntegrationCalculatorControllerTests : IClassFixture<TestApplicatio
     [InlineData("3 - 4 / 2", "1")]
     [InlineData("8 * (2 + 2) - 3 * 4", "20")]
     [InlineData("10 - 3 * (-4)", "22")]
+    [InlineData("-2 + 3", "1")]
     public async Task Calculate_CalculateExpression_Success(string expression, string result)
     {
         var response = await CalculateAsync(expression);
@@ -44,6 +45,10 @@ public class IntegrationCalculatorControllerTests : IClassFixture<TestApplicatio
     [InlineData("10 + 2 -", MathErrorMessager.EndingWithOperation)]
     [InlineData("((10 + 2)", MathErrorMessager.IncorrectBracketsNumber)]
     [InlineData("(10 - 2))", MathErrorMessager.IncorrectBracketsNumber)]
+    [InlineData("(10 - 2", MathErrorMessager.IncorrectBracketsNumber)]
+    [InlineData(")10 - 2", MathErrorMessager.IncorrectBracketsNumber)]
+    [InlineData("10 - 2(", MathErrorMessager.IncorrectBracketsNumber)]
+    [InlineData(")10 - 2(", MathErrorMessager.IncorrectBracketsNumber)]
     [InlineData("10 / 0", MathErrorMessager.DivisionByZero)]
     [InlineData("10 / (1 - 1)", MathErrorMessager.DivisionByZero)]
     public async Task Calculate_CalculateExpression_Error(string expression, string result)
