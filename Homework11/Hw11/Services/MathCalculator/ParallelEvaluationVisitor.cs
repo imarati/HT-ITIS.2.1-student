@@ -35,8 +35,7 @@ public class ParallelEvaluationVisitor
             ExpressionType.Add => Expression.Add(result[0], result[1]),
             ExpressionType.Subtract => Expression.Subtract(result[0], result[1]),
             ExpressionType.Multiply => Expression.Multiply(result[0], result[1]),
-            ExpressionType.Divide => Expression.Divide(result[0], result[1]),
-            _ => throw new InvalidOperationException("Operation not supported")
+            _ => Expression.Divide(result[0], result[1])
         };
     }
 
