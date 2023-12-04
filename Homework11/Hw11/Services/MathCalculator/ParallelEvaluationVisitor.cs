@@ -27,7 +27,7 @@ public class ParallelEvaluationVisitor
         if (node.NodeType == ExpressionType.Divide)
         {
             if (Expression.Lambda<Func<double>>(result[1]).Compile().Invoke() == 0)
-                throw new Exception(MathErrorMessager.DivisionByZero);
+                throw new DivideByZeroException(MathErrorMessager.DivisionByZero);
         }
 
         return node.NodeType switch

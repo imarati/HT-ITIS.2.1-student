@@ -1,4 +1,5 @@
 using Hw11.ErrorMessages;
+using Hw11.Exceptions;
 
 namespace Hw11.Services.MathCalculator;
 
@@ -24,11 +25,11 @@ public static class MathExpressionValidatorService
             if (s.StartsWith('(') 
                 && Operations.Contains(s[1]) 
                 && !s[1].Equals('-'))
-                throw new Exception(MathErrorMessager.InvalidOperatorAfterParenthesisMessage(s[1].ToString()));
+                throw new InvalidSyntaxException(MathErrorMessager.InvalidOperatorAfterParenthesisMessage(s[1].ToString()));
 
             if (s.EndsWith(')')
                 && Operations.Contains(s[^2]))
-                throw new Exception(MathErrorMessager.OperationBeforeParenthesisMessage(s[^2].ToString()));
+                throw new InvalidSyntaxException(MathErrorMessager.OperationBeforeParenthesisMessage(s[^2].ToString()));
 
             var pure = s.Replace("(", "").Replace(")", "");
 
@@ -40,9 +41,9 @@ public static class MathExpressionValidatorService
                                                && !c.Equals('(')
                                                && !c.Equals(')')
                                                && !Operations.Contains(c)))
-                    throw new Exception(MathErrorMessager.UnknownCharacterMessage(c));
+                    throw new InvalidSymbolException(MathErrorMessager.UnknownCharacterMessage(c));
 
-                throw new Exception(MathErrorMessager.NotNumberMessage(s));
+                throw new InvalidNumberException(MathErrorMessager.NotNumberMessage(s));
             }
 
             if (string.IsNullOrEmpty(prev))
@@ -52,7 +53,7 @@ public static class MathExpressionValidatorService
             }
 
             if (prev.Length == 1 && Operations.Contains(prev[0]) && pure.Length == 1 && Operations.Contains(pure[0]))
-                throw new Exception(MathErrorMessager.TwoOperationInRowMessage(prev, pure));
+                throw new InvalidSyntaxException(MathErrorMessager.TwoOperationInRowMessage(prev, pure));
 
             prev = s;
         }
