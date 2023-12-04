@@ -32,11 +32,9 @@ public class MathParserService
                 case "*":
                     operations.Push(Expression.Multiply(left, right));
                     break;
-                case "/":
+                default:
                     operations.Push(Expression.Divide(left, right));
                     break;
-                default:
-                    throw new InvalidOperationException("Operation not supported");
             }
         }
 
@@ -85,7 +83,7 @@ public class MathParserService
             }
             else if (original[i] == ')')
             {
-                while (stack.Count > 0 && stack.Peek() != '(')
+                while (stack.Peek() != '(')
                 {
                     output += " ";
                     output += stack.Pop();
