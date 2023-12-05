@@ -25,6 +25,7 @@ public class IntegrationCalculatorControllerTests : IClassFixture<WebApplication
     [InlineData("10 - 3 * (-4)", "22")]
     [InlineData("5 + 5 - (5 - 5)", "10")]
     [InlineData("-2 + 3", "1")]
+    [InlineData("2 - 6", "-4")]
     public async Task Calculate_CalculateExpression_Success(string expression, string result)
     {
         var response = await CalculateAsync(expression);
