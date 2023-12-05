@@ -19,7 +19,7 @@ public class ExpressionVisitorDispatcher
 
     public static async Task<double> Visit(Expression expression)
     {
-        expression = (dynamic) expression;
-        return await Visit(expression);
+        dynamic exp =  expression;
+        return await Visit(exp);
     }
 }
