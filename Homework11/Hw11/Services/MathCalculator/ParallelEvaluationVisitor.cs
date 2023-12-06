@@ -14,8 +14,6 @@ public class ParallelEvaluationVisitor
                 return await VisitBinaryAsync(binaryLeft);
             if (node.Left is UnaryExpression unaryLeft)
                 return await VisitUnaryAsync(unaryLeft);
-            if (node.Left is ConstantExpression constantLeft)
-                return VisitConstant(constantLeft);
             return node.Left;
         });
         var secondTask = new Lazy<Task<Expression>>(async () =>
@@ -25,8 +23,6 @@ public class ParallelEvaluationVisitor
                 return await VisitBinaryAsync(binaryLeft);
             if (node.Right is UnaryExpression unaryRight)
                 return await VisitUnaryAsync(unaryRight);
-            if (node.Right is ConstantExpression constantRight)
-                return VisitConstant(constantRight);
             return node.Right;
         });
 
