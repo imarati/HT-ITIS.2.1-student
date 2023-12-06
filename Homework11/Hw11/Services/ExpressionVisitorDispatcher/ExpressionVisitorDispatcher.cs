@@ -22,10 +22,4 @@ public class ExpressionVisitorDispatcher
         var exp = new ParallelEvaluationVisitor().VisitConstant(expression);
         return Expression.Lambda<Func<double>>(exp).Compile().Invoke();
     }
-
-    public static async Task<double> Visit(Expression expression)
-    {
-        dynamic exp =  expression;
-        return await Visit(exp);
-    }
 }

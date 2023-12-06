@@ -47,35 +47,9 @@ public class ParallelEvaluationVisitor
         };
     }
 
-    public async Task<Expression> VisitUnaryAsync(UnaryExpression node)
+    public async Task<UnaryExpression> VisitUnaryAsync(UnaryExpression node)
     {
-        var operandTask = new Lazy<Task<Expression>>(async () =>
-        {
-            await Task.Delay(1000);
-            if (node.Operand is BinaryExpression binaryOperand)
-                return await VisitBinaryAsync(binaryOperand);
-            if (node.Operand is UnaryExpression unaryOperand)
-                return await VisitUnaryAsync(unaryOperand);
-            if (node.Operand is ConstantExpression constantOperand)
-                return VisitConstant(constantOperand);
-            return node.Operand;
-        });
-
-        var result = await Task.WhenAll(operandTask.Value);
-
-        if (node.NodeType == ExpressionType.Divide)
-        {
-            if (Expression.Lambda<Func<double>>(result[1]).Compile().Invoke() == 0)
-                throw new DivideByZeroException(MathErrorMessager.DivisionByZero);
-        }
-        
-        return node.NodeType switch
-        {
-            ExpressionType.Add => Expression.Add(result[0], result[1]),
-            ExpressionType.Subtract => Expression.Subtract(result[0], result[1]),
-            ExpressionType.Multiply => Expression.Multiply(result[0], result[1]),
-            _ => Expression.Divide(result[0], result[1])
-        };
+        return node;
     }
 
     public Expression VisitConstant(ConstantExpression node)

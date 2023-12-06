@@ -12,9 +12,14 @@ public class MathParserService
 
         foreach (var s in expressionTransformed)
         {
-            if (Regex.IsMatch(s, @"^-?\d+(\.\d+)?$"))
+            if (Regex.IsMatch(s, @"^\d+(\.\d+)?$"))
             {
                 operations.Push(Expression.Constant(double.Parse(s)));
+                continue;
+            }
+            if (Regex.IsMatch(s, @"^-?\d+(\.\d+)?$"))
+            {
+                operations.Push(Expression.Negate(Expression.Constant(double.Parse(s.Replace("-", "")))));
                 continue;
             }
 
