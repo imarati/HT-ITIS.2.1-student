@@ -19,7 +19,7 @@ public class ExpressionVisitorDispatcher
 
     public static async Task<double> Visit(ConstantExpression expression)
     {
-        var exp = new ParallelEvaluationVisitor().VisitConstant((dynamic)expression);
-        return Expression.Lambda<Func<double>>(exp).Compile().Invoke();
+        var value = (double)expression.Value!;
+        return await Task.Run(() => value);
     }
 }
