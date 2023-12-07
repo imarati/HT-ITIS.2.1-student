@@ -10,7 +10,7 @@ public class MathCalculatorService : IMathCalculatorService
     {
         MathExpressionValidatorService.ValidateExpression(expression);
         var tree = MathParserService.ParseExpression(expression!);
-        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit(tree);
+        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
         return result;
     }
 }
