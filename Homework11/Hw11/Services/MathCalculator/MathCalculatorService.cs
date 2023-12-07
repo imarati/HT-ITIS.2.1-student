@@ -7,8 +7,8 @@ public class MathCalculatorService : IMathCalculatorService
     public async Task<double> CalculateMathExpressionAsync(string? expression)
     {
         MathExpressionValidatorService.ValidateExpression(expression);
-        dynamic tree = MathParserService.ParseExpression(expression!);
-        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit(tree);
+        var tree = MathParserService.ParseExpression(expression!);
+        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
 
         return result;
     }
