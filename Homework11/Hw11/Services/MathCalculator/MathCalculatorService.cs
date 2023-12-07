@@ -11,7 +11,7 @@ public class MathCalculatorService : IMathCalculatorService
         var tree = MathParserService.ParseExpression(expression!);
         var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
         if (double.IsFinite(result))
-            return result;ы
+            return result;
         throw new DivideByZeroException(DivisionByZero);
     }
 }
