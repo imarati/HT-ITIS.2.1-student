@@ -48,8 +48,8 @@ public class ParallelEvaluationVisitor
         return node;
     }
 
-    public Expression VisitConstant(ConstantExpression node)
-    {
-        return node;
-    }
+    // public Expression VisitConstant(ConstantExpression node)
+    // {
+    //     return node;
+    // }
 }
