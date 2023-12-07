@@ -7,13 +7,13 @@ public class ExpressionVisitorDispatcher
 {
     public static async Task<double> Visit(BinaryExpression expression)
     {
-        var exp = await new ParallelEvaluationVisitor().VisitBinaryAsync((dynamic)expression);
+        var exp = await new ParallelEvaluationVisitor().VisitBinaryAsync(expression);
         return Expression.Lambda<Func<double>>(exp).Compile().Invoke();
     }
     
     public static async Task<double> Visit(UnaryExpression expression)
     {
-        var exp = await new ParallelEvaluationVisitor().VisitUnaryAsync((dynamic)expression);
+        var exp = await new ParallelEvaluationVisitor().VisitUnaryAsync(expression);
         return Expression.Lambda<Func<double>>(exp).Compile().Invoke();
     }
 
