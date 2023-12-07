@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Hw11.ErrorMessages;
 
 namespace Hw11.Services.MathCalculator;
 using static Hw11.ErrorMessages.MathErrorMessager;
@@ -9,6 +10,9 @@ public class MathCalculatorService : IMathCalculatorService
     {
         MathExpressionValidatorService.ValidateExpression(expression);
         var tree = MathParserService.ParseExpression(expression!);
-        return await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
+        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
+        return  Double.IsInfinity(result) ? 
+            throw new DivideByZeroException(MathErrorMessager.DivisionByZero):
+            result;
     }
 }
