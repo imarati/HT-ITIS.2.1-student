@@ -22,4 +22,9 @@ public class ExpressionVisitorDispatcher
         var value = (double)expression.Value!;
         return await Task.Run(() => value);
     }
+
+    public static async Task<double> Visit(Expression expression)
+    {
+        return Visit((dynamic)expression);
+    }
 }

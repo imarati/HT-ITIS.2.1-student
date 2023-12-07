@@ -10,9 +10,7 @@ public class MathCalculatorService : IMathCalculatorService
     {
         MathExpressionValidatorService.ValidateExpression(expression);
         var tree = MathParserService.ParseExpression(expression!);
-        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
-        return  Double.IsInfinity(result) ? 
-            throw new DivideByZeroException(MathErrorMessager.DivisionByZero):
-            result;
+        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit(tree);
+        return result;
     }
 }
