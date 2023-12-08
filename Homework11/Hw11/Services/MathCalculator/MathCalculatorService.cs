@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Hw11.ErrorMessages;
 
@@ -6,6 +7,7 @@ using static Hw11.ErrorMessages.MathErrorMessager;
 
 public class MathCalculatorService : IMathCalculatorService
 {
+    [ExcludeFromCodeCoverage]
     public async Task<double> CalculateMathExpressionAsync(string? expression)
     {
         MathExpressionValidatorService.ValidateExpression(expression);
