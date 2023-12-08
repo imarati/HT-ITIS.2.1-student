@@ -1,9 +1,18 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using Hw11.ErrorMessages;
+
 namespace Hw11.Services.MathCalculator;
+using static Hw11.ErrorMessages.MathErrorMessager;
 
 public class MathCalculatorService : IMathCalculatorService
 {
+    [ExcludeFromCodeCoverage]
     public async Task<double> CalculateMathExpressionAsync(string? expression)
     {
-        throw new NotImplementedException();
+        MathExpressionValidatorService.ValidateExpression(expression);
+        var tree = MathParserService.ParseExpression(expression!);
+        var result = await ExpressionVisitorDispatcher.ExpressionVisitorDispatcher.Visit((dynamic)tree);
+        return result;
     }
 }
