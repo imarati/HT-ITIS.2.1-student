@@ -28,9 +28,3 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Calculator}/{action=Index}/{id?}");
 app.Run();
-
-namespace MemoryCachedCalculator
-{
-    [ExcludeFromCodeCoverage]
-    public partial class Program { }
-}
