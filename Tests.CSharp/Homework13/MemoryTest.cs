@@ -12,7 +12,7 @@ public class MemoryTest : IClassFixture<WebApplicationFactory<Program>>
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
 
-    public MemoryTest(WebApplicationFactory<Program> factory, ITestOutputHelper outpu
+    public MemoryTest(WebApplicationFactory<Program> factory, ITestOutputHelper output)
     {
         _output = output;
         DotMemoryUnitTestOutput.SetOutputMethod(_output.WriteLine);
