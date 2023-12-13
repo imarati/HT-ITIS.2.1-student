@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace MemoryCachedCalculator.Dto;
 
-[ExcludeFromCodeCoverage]
 public class CalculationMathExpressionResultDto
 {
     public bool IsSuccess { get; set; }

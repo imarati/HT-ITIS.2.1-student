@@ -1,51 +1,38 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using MemoryCachedCalculator.Dto;
-using MemoryCachedCalculator.Services.MyMemoryCache;
+﻿using MemoryCachedCalculator.Dto;
+using MemoryCachedCalculator.ErrorMessages;
+using MemoryCachedCalculator.Services.Decorator;
+using MemoryCachedCalculator.Services.MathCalculator;
+using MemoryCachedCalculator.Services.Parsing;
+using MemoryCachedCalculator.Services.Tokens;
+using MemoryCachedCalculator.Services.Validator;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Globalization;
+using System.Linq.Expressions;
 
 namespace MemoryCachedCalculator.Services.CachedCalculator;
 
-[ExcludeFromCodeCoverage]
-public class MathCachedCalculatorService : IMathCalculatorService
+public class MathCachedCalculatorService : CalculatorDecorator
 {
-    private readonly IMathCalculatorService _simpleCalculator;
-    private readonly IMyMemoryCache _cache;
+    private readonly IMemoryCache _memoryCache;
 
-    public MathCachedCalculatorService(IMyMemoryCache cache, IMathCalculatorService simpleCalculator)
-    {
-        _cache = cache;
-        _simpleCalculator = simpleCalculator;
-    }
+    public MathCachedCalculatorService(IMemoryCache memoryCache, IMathCalculatorService simpleCalculator) 
+		: base(simpleCalculator)
+	{
+		_memoryCache = memoryCache;
+	}
 
-    public async Task<CalculationMathExpressionResultDto> CalculateMathExpressionAsync(string? expression)
-    {
-        // // For cache reading purposes we need to make sure that expression is not null
-        if (!string.IsNullOrEmpty(expression))
-        {
-            // Reading cache
-            var expressionTuple = _cache.Find(expression.Trim());
-            if (expressionTuple.Item1)
-            {
-                // Getting cached expression result
-                var expressionResult = expressionTuple.Item2;
-                Console.WriteLine($"Result from cache: {expressionResult}");
+	public override async Task<CalculationMathExpressionResultDto> CalculateMathExpressionAsync(string? expression)
+	{
+		if (_memoryCache.TryGetValue(expression, out CalculationMathExpressionResultDto foundSolvingExpression))
+			return new CalculationMathExpressionResultDto(foundSolvingExpression.Result);
+		
+		var result = await base.CalculateMathExpressionAsync(expression);
+		if (!result.IsSuccess)
+			return result;
 
-                // Returning expression result
-                return new CalculationMathExpressionResultDto(expressionResult);
-            }
-        }
+		_memoryCache.Set(expression, result);
 
-
-        // Calculating expression using MathCalculatorService
-        var result = await _simpleCalculator.CalculateMathExpressionAsync(expression);
-
-        // If computation succeeded
-        if (result.IsSuccess)
-        {
-            // Writing to cache
-            _cache.Insert(expression!.Trim(), result.Result);
-        }
-
-        // Returning CalculatorMathExpressionResultDto that was received from Calculating method
-        return result;
+		return result;
     }
 }

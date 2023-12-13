@@ -1,20 +1,23 @@
 using System.Diagnostics.CodeAnalysis;
 using MemoryCachedCalculator.Dto;
 using MemoryCachedCalculator.Services;
+using MemoryCachedCalculator.Services.MathCalculator;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MemoryCachedCalculator.Controllers;
 
-[ExcludeFromCodeCoverage]
 public class CalculatorController : Controller
 {
     private readonly IMathCalculatorService _mathCalculatorService;
+    private readonly IMemoryCache _memoryCache;
 
-    public CalculatorController(IMathCalculatorService mathCalculatorService)
+    public CalculatorController(IMathCalculatorService mathCalculatorService, IMemoryCache memoryCache)
     {
         _mathCalculatorService = mathCalculatorService;
+        _memoryCache = memoryCache;
     }
-
+        
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public IActionResult Index()

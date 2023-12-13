@@ -1,47 +1,78 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
 using MemoryCachedCalculator.Dto;
-using MemoryCachedCalculator.ExpressionVisitor;
-using MemoryCachedCalculator.Handlers;
-using MemoryCachedCalculator.Regex;
+using MemoryCachedCalculator.ErrorMessages;
+using MemoryCachedCalculator.Services.CachedCalculator;
+using MemoryCachedCalculator.Services.Decorator;
+using MemoryCachedCalculator.Services.Parsing;
+using MemoryCachedCalculator.Services.Tokens;
+using MemoryCachedCalculator.Services.Validator;
+using System.Globalization;
+using System.Linq.Expressions;
+
 
 namespace MemoryCachedCalculator.Services.MathCalculator;
 
-[ExcludeFromCodeCoverage]
 public class MathCalculatorService : IMathCalculatorService
 {
+    private readonly IValidator _validator;
+    private readonly ITokenizer _tokenizer;
+    private readonly IParser _parser;
+
+    public MathCalculatorService(IValidator validator, ITokenizer tokenizer, IParser parser)
+    {
+        _validator = validator;
+        _tokenizer = tokenizer;
+        _parser = parser;
+    }
+
     public async Task<CalculationMathExpressionResultDto> CalculateMathExpressionAsync(string? expression)
     {
-        try
+        var error = _validator.Validate(expression);
+        if (error is not null)
         {
-            // Валидируем выражение и если не проходит валидацию, то возвращаем ошибку
-            var expressionValidated = ExpressionValidator.Validate(expression);
-            if (!expressionValidated.Item1)
-                return new CalculationMathExpressionResultDto(expressionValidated.Item2);
-
-            // Парсим выражение в польскую запись
-            var expressionParser = new ExpressionParser();
-            var expressionInPolishNotation = expressionParser.ParseToPolishNotation(
-                RegexTemplates.SplitDelimiter.Split(expression));
-            // return new CalculationMathExpressionResultDto(expressionInPolishNotation);
-
-            // Конвертируем в единое выражение
-            var expressionConverted = ExpressionTreeConverter.ConvertToExpressionTree(expressionInPolishNotation);
-
-            // Искуственная задержка
-            await Task.Delay(1000);
-
-            // Компилируем выражение которое возвращает MyExpressionVisitor и вызываем
-            var result = Expression.Lambda<Func<double>>(
-                await MyExpressionVisitor.VisitExpression(expressionConverted)).Compile().Invoke();
-
-            // Возвращаем результат
-            return new CalculationMathExpressionResultDto(result);
+            return new CalculationMathExpressionResultDto(error);
         }
-        catch (Exception e)
+
+        var tokens = _tokenizer.Tokenize(expression!);
+
+        var expr = _parser.Parse(tokens);
+
+        var exprVisitor = new CalculatorExpressionVisitor();
+        var tree = exprVisitor.GetTree(expr);
+
+        var result = await CalcAsync(expr, tree);
+        return double.IsNaN(result)
+            ? new CalculationMathExpressionResultDto(MathErrorMessager.DivisionByZero)
+            : new CalculationMathExpressionResultDto(result);
+        
+    }
+
+    private async Task<double> CalcAsync(Expression current, Dictionary<Expression, Tuple<Expression, Expression>> tree)
+    {
+        if (!tree.ContainsKey(current))
         {
-            // Ловим ошибку и возвращаем (кастылиии, но нужно как-то ловить DivisionByZero)
-            return new CalculationMathExpressionResultDto(e.Message);
+            return double.Parse(
+                current.ToString(),
+                CultureInfo.CurrentCulture);
         }
+
+        var leftTask = Task.Run(async () =>
+        {
+            return await CalcAsync(tree[current].Item1, tree);
+        });
+        var rightTask = Task.Run(async () =>
+        {
+            return await CalcAsync(tree[current].Item2, tree);
+        });
+
+        var result = await Task.WhenAll(leftTask, rightTask);
+
+        return current.NodeType switch
+        {
+            ExpressionType.Add => result[0] + result[1],
+            ExpressionType.Subtract => result[0] - result[1],
+            ExpressionType.Multiply => result[0] * result[1],
+            ExpressionType.Divide when Math.Abs(result[1]) < double.Epsilon => double.NaN,
+            _ => result[0] / result[1]
+        };
     }
 }
